@@ -3,40 +3,34 @@ image: gitpod/workspace-full
 tasks:
   - name: Install Dependencies
     init: |
-      # Install Node.js
-      nvm install 18
-      nvm use 18
-      
       # Install Solana
       sh -c "$(curl -sSfL https://release.solana.com/v1.17.9/install)"
+      export PATH="/home/gitpod/.local/share/solana/install/active_release/bin:$PATH"
       echo 'export PATH="/home/gitpod/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.bashrc
-      source ~/.bashrc
       
-      # Install Rust
-      curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-      source "$HOME/.cargo/env"
-      
-      # Install Anchor
-      cargo install --git https://github.com/coral-xyz/anchor avm --locked --force
-      avm install latest
-      avm use latest
-      
-      # Install npm dependencies
-      npm install --legacy-peer-deps
-      
-    command: |
-      echo "Environment ready!"
-      npm run dev
+      # Install project dependencies
+      npm install --legacy-peer-deps \
+        @project-serum/anchor \
+        @solana/wallet-adapter-base \
+        @solana/wallet-adapter-react \
+        @solana/wallet-adapter-react-ui \
+        @solana/wallet-adapter-wallets \
+        @solana/web3.js \
+        next@latest \
+        zustand
 
-  - name: Solana Config
+      # Install dev dependencies
+      npm install -D \
+        @types/node@latest \
+        @types/react@latest \
+        @types/react-dom@latest \
+        typescript@latest
+      
     command: |
+      export PATH="/home/gitpod/.local/share/solana/install/active_release/bin:$PATH"
       solana config set --url devnet
       solana-keygen new --no-bip39-passphrase -o ~/.config/solana/id.json
-
-vscode:
-  extensions:
-    - dbaeumer.vscode-eslint
-    - esbenp.prettier-vscode
+      npm run dev
 
 ports:
   - port: 3000
