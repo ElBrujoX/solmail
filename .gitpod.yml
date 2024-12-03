@@ -1,0 +1,18 @@
+image: gitpod/workspace-full
+
+tasks:
+  - init: |
+      curl -sSfL https://release.solana.com/v1.17.9/install | sh
+      export PATH="/home/gitpod/.local/share/solana/install/active_release/bin:$PATH"
+      curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+      source $HOME/.cargo/env
+      cargo install --git https://github.com/coral-xyz/anchor avm --locked --force
+      avm install latest
+      avm use latest
+      npm install
+    command: |
+      npm run dev
+
+ports:
+  - port: 3000
+    onOpen: open-preview 
